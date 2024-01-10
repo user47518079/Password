@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Generator</title>
+	   <style>
+			body {
+				font-family: Arial, sans-serif;
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 20px;
+				display: flex;
+				flex-wrap: wrap;
+			}
+
+			h1 {
+				text-align: center;
+				width: 100%;
+			}
+
+			.section-container {
+				width: 48%;
+				box-sizing: border-box;
+				padding: 10px;
+			}
+
+			label {
+				display: block;
+				margin-bottom: 5px;
+			}
+
+			input {
+				margin-bottom: 10px;
+			}
+
+			button {
+				margin-top: 10px;
+				padding: 8px 12px;
+				background-color: #4CAF50;
+				color: white;
+				border: none;
+				border-radius: 4px;
+				cursor: pointer;
+			}
+
+			button:hover {
+				background-color: #45a049;
+			}
+
+			#test-password,
+			#show-password {
+				margin-right: 5px;
+			}
+    </style>
+	
+</head>
+<body>
+  
+    
+
+    <div class="section-container" id="generation-section">
+        <!-- Generation Section -->
+	 <div>
+	<h2>Password Generator</h2>
+    <div>
+        <label for="password-length">Password Length: </label>
+        <input type="number" id="password-length" value="10">
+    </div>
+    <div>
+        <label for="include-symbols">Include Symbols: </label>
+        <input type="checkbox" id="include-symbols" checked>
+    </div>
+    <div>
+        <label for="include-numbers">Include Numbers: </label>
+        <input type="checkbox" id="include-numbers" checked>
+    </div>
+    <div>
+        <label for="include-lowercase">Include Lowercase Characters: </label>
+        <input type="checkbox" id="include-lowercase" checked>
+    </div>
+    <div>
+        <label for="include-uppercase">Include Uppercase Characters: </label>
+        <input type="checkbox" id="include-uppercase" checked>
+    </div>
+    <div>
+        <label for="exclude-similar">Exclude Similar Characters: </label>
+        <input type="checkbox" id="exclude-similar" checked>
+    </div>
+    <div>
+        <label for="exclude-ambiguous">Exclude Ambiguous Characters: </label>
+        <input type="checkbox" id="exclude-ambiguous" checked>
+    </div>
+    <div>
+        <label for="generated-password">Generated Password: </label>
+        <input type="text" id="generated-password" readonly>
+    </div>
+    <div>
+        <button onclick="generatePassword()">Generate Password</button>
+        <button onclick="copyPassword()">Copy Password</button>
+    </div>
+    <div>
+        <h2>Password Strength</h2>
+        <p style="color: red;" id="password-strength"></p>
+        <p style="color: red;" id="time-to-crack"></p>
+    </div>
+	</div>
+	</div>
+	
+    <div class="section-container" id="test-section">
+        <!-- Test Section -->
+        <h2>Password Strength Test</h2>
+        <label for="test-password">Enter Password: </label>
+        <input type="password" id="test-password">
+        <input type="checkbox" id="show-password" onchange="togglePasswordVisibility()">
+        <label for="show-password">Show Password</label>
+        <button onclick="testPassword()">Test Strength</button>
+        <p style="color: red;" id="test-strength-result"></p>
+        <p style="color: red;" id="test-time-to-crack"></p>
+		<br>
+		<br>
+		
+		<table style="border-collapse: collapse; width: 100%;" border="1">
+				<tbody>
+				<tr>
+				<td style="font-size: 12px; width: 100%;">
+				<p>The time it takes to crack a password is calculated based on the concept of entropy, which measures the uncertainty or randomness of a password. Entropy is usually expressed in bits, and the formula here to calculate entropy for a password of <span class="math math-inline"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord mathnormal">L(</span></span></span></span></span>length) with N(possible characters) is:</p>
+				<p><em><span class="math math-inline"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord text"><span class="mord">Entropy </span></span><span class="mrel">= </span></span><span class="base"><span class="mord mathnormal">L</span><span class="mbin">&times;</span></span><span class="base"><span class="mop">log<span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><sub><span class="vlist"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></sub><span class="vlist-s">​</span></span></span></span></span><span class="mopen">(</span><span class="mord mathnormal">N</span><span class="mclose">)</span></span></span></span></span></em></p>
+				<p>Where:</p>
+				<ul>
+				<li><span class="math math-inline"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord mathnormal">L</span></span></span></span></span> is the length of the password.</li>
+				<li><span class="math math-inline"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord mathnormal">N</span></span></span></span></span> is the number of possible characters in the character set used to generate the password.</li>
+				</ul>
+				<p>The number of possible passwords (<span class="math math-inline"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord mathnormal">P</span></span></span></span></span>) is then given by <span class="math math-inline"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">2<sup><em><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist"><span class="sizing reset-size6 size3 mtight"><span class="mord text mtight"><span class="mord mtight">Entropy</span></span></span></span></span></span></span></em></sup></span></span></span></span></span>. The time to crack the password depends on the speed at which an attacker can make guesses. If an attacker can make <span class="math math-inline"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord mathnormal">G</span></span></span></span></span> (guesses per second), then the T(time to crack)is calculated as:</p>
+				<p><em><span class="math math-inline"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord mathnormal">T</span><span class="mrel">=</span></span></span></span></span><span aria-hidden="true"><span class="vlist"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight"><sup>G</sup>/</span></span></span><sub><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">P</span></span></span></sub></span></span></em><span class="math math-inline"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist-s">​</span></span></span></span></span></span></span></span></span></p>
+				<p>In this page the guesses per second is set to 100,000,000,000&nbsp;or 1 hundred billion guesses per second</p>
+				<p>This was referanced from <a title="This The Conversation Article" href="https://theconversation.com/a-computer-can-guess-more-than-100-000-000-000-passwords-per-second-still-think-yours-is-secure-144418" target="_blank" rel="noopener">This The Conversation Article</a></p>
+				</td>
+				</tr>
+				</tbody>
+				</table>
+				<p>&nbsp;</p>
+					
+    </div>
+	
+<h2>Password Encoder and Decoder</h2>
+<br>
+<br>
+        <div>
+            <label style="margin-left: 20px;"for="input-text">Enter Text: </label>
+            <input style="margin-left: 20px;"type="text" id="input-text">
+        </div>
+        <div>
+            <label style="margin-left: 20px;"for="encryption-key">Enter Encryption Key: </label>
+            <input style="margin-left: 20px;"type="text" id="encryption-key">
+        </div>
+        <div>
+            <button onclick="encodePassword()">Encode Password</button>
+            <button onclick="decodePassword()">Decode Password</button>
+        </div>
+		<br>
+        <div>
+            <label style="margin-left: 120px;"for="output-text">Output: </label>
+            <textarea style="margin-left: 120px;"id="output-text" readonly></textarea>
+        </div>
+		<br>
+		<br>
+		<table style="border-collapse: collapse; width: 100%;" border="1">
+			<tbody>
+			<tr>
+			<td style="font-size: 10px; width: 100%;">
+			<p>Input Text and Key:</p>
+			<ul>
+			<li>text: The original text that you want to encode.</li>
+			<li>key: The encryption key, which can be a string or a number.</li>
+			</ul>
+			<p>Iterate through Characters:</p>
+			<ul>
+			<li>For each character in the text, and for each iteration, take the ASCII code of the character and add the ASCII code of the corresponding character in the key.</li>
+			<li>If the key is shorter than the text, it repeats to match the length of the text.</li>
+			</ul>
+			<p>Base64 Encoding:</p>
+			<ul>
+			<li>The resulting string of ASCII codes is then encoded in Base64 for more readability and to handle special characters.</li>
+			</ul>
+			<p>Output:</p>
+			<ul>
+			<li>The final output is the encoded text. Example:</li>
+			</ul>
+			<p>Let's say you want to encode the text "abc123" with the key "key". The ASCII codes of "a", "b", "c" are 97, 98, 99, and the ASCII codes of "k", "e", "y" are 107, 101, 121.</p>
+			<p>Encoded ASCII codes: (97 + 107), (98 + 101), (99 + 121) = 204, 199, 220</p>
+			<p>Base64 encoded: "MjA0MTk5OQ=="</p>
+			</td>
+			</tr>
+			</tbody>
+			</table>
+    </div>
+
+    <script>
+        function generatePassword() {
+            const length = document.getElementById("password-length").value;
+            const includeSymbols = document.getElementById("include-symbols").checked;
+            const includeNumbers = document.getElementById("include-numbers").checked;
+            const includeLowercase = document.getElementById("include-lowercase").checked;
+            const includeUppercase = document.getElementById("include-uppercase").checked;
+            const excludeSimilar = document.getElementById("exclude-similar").checked;
+            const excludeAmbiguous = document.getElementById("exclude-ambiguous").checked;
+
+            const charset = buildCharset(includeSymbols, includeNumbers, includeLowercase, includeUppercase, excludeSimilar, excludeAmbiguous);
+            const password = generateRandomPassword(length, charset);
+
+            document.getElementById("generated-password").value = password;
+
+            const entropy = calculateEntropy(length, charset.length);
+            updatePasswordStrength(entropy);
+            updateTimeToCrack(entropy);
+        }
+
+        function copyPassword() {
+            const passwordField = document.getElementById("generated-password");
+            passwordField.select();
+            document.execCommand("copy");
+            alert("Password copied to clipboard!");
+        }
+
+        function buildCharset(includeSymbols, includeNumbers, includeLowercase, includeUppercase, excludeSimilar, excludeAmbiguous) {
+            let charset = "";
+            
+            if (includeSymbols) charset += "@#$%^&*()_-+=<>?/[]{}|";
+            if (includeNumbers) charset += "0123456789";
+            if (includeLowercase) charset += "abcdefghijklmnopqrstuvwxyz";
+            if (includeUppercase) charset += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+            if (excludeSimilar) {
+                charset = charset.replace(/[il1Lo0O]/g, '');
+            }
+
+            if (excludeAmbiguous) {
+                charset = charset.replace(/[{}[\]()\/\\'`",;:.<>]/g, '');
+            }
+
+            return charset;
+        }
+
+        function generateRandomPassword(length, charset) {
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * charset.length);
+                password += charset.charAt(randomIndex);
+            }
+            return password;
+        }
+
+        function calculateEntropy(length, charsetSize) {
+            return length * Math.log2(charsetSize);
+        }
+
+        function updatePasswordStrength(entropy) {
+            const strengthElement = document.getElementById("password-strength");
+            let strength = "";
+
+            if (entropy < 28) {
+                strength = "Weak";
+            } else if (entropy < 36) {
+                strength = "Moderate";
+            } else {
+                strength = "Strong";
+            }
+
+            strengthElement.textContent = `Password Strength: ${strength}`;
+        }
+
+        function updateTimeToCrack(entropy) {
+            const timeToCrackElement = document.getElementById("time-to-crack");
+            const guessesPerSecond = 100000000000; // Adjust based on the attacker's capabilities
+
+            const secondsToCrack = Math.pow(2, entropy) / guessesPerSecond;
+            const time = formatTime(secondsToCrack);
+
+            timeToCrackElement.textContent = `Time to Crack: ${time}`;
+        }
+
+function formatTime(seconds) {
+    if (seconds < 1) {
+        return "less than a second";
+    }
+
+    const units = [
+        { name: "second", divisor: 60 },
+        { name: "minute", divisor: 60 },
+        { name: "hour", divisor: 24 },
+        { name: "day", divisor: 30 },
+        { name: "month", divisor: 12 },
+        { name: "year", divisor: 1000 }, // Changed divisor to 1000 for consistent conversion to million/billion years
+        { name: "million year", divisor: 1000 },
+        { name: "billion year", divisor: 1000 },
+        { name: "trillion year", divisor: 1000 }		// Use Infinity to ensure always display billion for very large times
+    ];
+
+    let time = seconds;
+
+    for (let i = 0; i < units.length; i++) {
+        const unit = units[i];
+        if (time < unit.divisor) {
+            return `${Math.round(time)} ${unit.name}${Math.round(time) !== 1 ? 's' : ''}`;
+        }
+        time /= unit.divisor;
+    }
+
+    return `${Math.round(time)} ${units[units.length - 1].name}${Math.round(time) !== 1 ? 's' : ''}`;
+}
+   function testPassword() {
+        const testPassword = document.getElementById("test-password").value;
+        const includeSymbols = document.getElementById("include-symbols").checked;
+        const includeNumbers = document.getElementById("include-numbers").checked;
+        const includeLowercase = document.getElementById("include-lowercase").checked;
+        const includeUppercase = document.getElementById("include-uppercase").checked;
+        const excludeSimilar = document.getElementById("exclude-similar").checked;
+        const excludeAmbiguous = document.getElementById("exclude-ambiguous").checked;
+
+        const charset = buildCharset(includeSymbols, includeNumbers, includeLowercase, includeUppercase, excludeSimilar, excludeAmbiguous);
+        const testEntropy = calculateEntropy(testPassword.length, charset.length);
+
+        updateTestPasswordStrength(testEntropy);
+        updateTimeToCrackTestPassword(testEntropy);
+    }
+
+        // Function to update strength for user-input password
+        function updateTestPasswordStrength(entropy) {
+            const testStrengthElement = document.getElementById("test-strength-result");
+            let testStrength = "";
+
+            if (entropy < 28) {
+                testStrength = "Weak";
+            } else if (entropy < 36) {
+                testStrength = "Moderate";
+            } else {
+                testStrength = "Strong";
+            }
+
+            testStrengthElement.textContent = `Password Strength: ${testStrength}`;
+        }
+
+        // Function to update time to crack for user-input password
+        function updateTimeToCrackTestPassword(entropy) {
+            const testTimeToCrackElement = document.getElementById("test-time-to-crack");
+            const guessesPerSecond = 100000000000; // Adjust based on the attacker's capabilities
+
+            const secondsToCrack = Math.pow(2, entropy) / guessesPerSecond;
+            const time = formatTime(secondsToCrack);
+
+            testTimeToCrackElement.textContent = `Time to Crack: ${time}`;
+        }
+		
+	// Function to toggle password visibility
+        function togglePasswordVisibility() {
+            const testPassword = document.getElementById("test-password");
+            const showPassword = document.getElementById("show-password");
+
+            testPassword.type = showPassword.checked ? "text" : "password";
+        }	
+		
+function encodePassword() {
+            const inputText = document.getElementById("input-text").value;
+            const encryptionKey = document.getElementById("encryption-key").value;
+
+            const encodedText = encode(inputText, encryptionKey);
+            document.getElementById("output-text").value = encodedText;
+        }
+
+        function decodePassword() {
+            const encodedText = document.getElementById("input-text").value;
+            const encryptionKey = document.getElementById("encryption-key").value;
+
+            const decodedText = decode(encodedText, encryptionKey);
+            document.getElementById("output-text").value = decodedText;
+        }
+
+        function encode(text, key) {
+            let result = "";
+            for (let i = 0; i < text.length; i++) {
+                const charCode = text.charCodeAt(i) + key.charCodeAt(i % key.length);
+                result += String.fromCharCode(charCode);
+            }
+            return btoa(result); // Use base64 encoding for a more readable output
+        }
+
+        function decode(encodedText, key) {
+            const decodedResult = atob(encodedText);
+            let result = "";
+            for (let i = 0; i < decodedResult.length; i++) {
+                const charCode = decodedResult.charCodeAt(i) - key.charCodeAt(i % key.length);
+                result += String.fromCharCode(charCode);
+            }
+            return result;
+        }
+		
+		
+    </script>
+</body>
+</html>
